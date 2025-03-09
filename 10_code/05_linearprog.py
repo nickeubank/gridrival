@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from scipy import optimize
+from scipy.optimize import milp
 
 pd.set_option("mode.copy_on_write", True)
 
@@ -12,6 +13,7 @@ salaries = pd.read_csv("../00_source_data/gridrival_stats.csv")
 # Drop people I hate
 salaries["locked"] = salaries["contract"].notnull()
 salaries = salaries[(salaries["exclude"] != 1)]
+locked = salaries[salaries["locked"]]
 
 # Figure out who is in contract.
 drivers_to_pick = 5 - salaries.loc[salaries.type == "driver", "locked"].sum()
@@ -75,34 +77,97 @@ if drivers_to_pick > 0:
     drivers_A
     constraints.append(optimize.LinearConstraint(A=drivers_A, lb=0, ub=drivers_to_pick))
 
-from scipy.optimize import milp
+###
+# Actual picks
+###
 
-picks = milp(
-    c=-points,
-    constraints=constraints,
-    integrality=integrality,
-    bounds=bounds,
+# Star driver is hard to do in integer programming framework, so
+# just loop over each possible star, optimize, and pick best at the
+# end.
+#
+# Adding a -1 index for the version without a starred driver in case
+# best starred driver is one under contract or pre-picked.
+
+starable_drivers = pickable[
+    (pickable["type"] == "driver") & (pickable["salary"] <= 15)
+].index.append(pd.Index([-1]))
+
+optimal_picks = []
+
+for i in starable_drivers:
+    points_copy = points.copy()
+
+    if i != -1:
+        points_copy[i] *= 2
+
+    picks = milp(
+        c=-points_copy,
+        constraints=constraints,
+        integrality=integrality,
+        bounds=bounds,
+    )
+    picked_choices = pickable[picks.x.astype("bool")]
+    picked_choices["starred"] = 0
+    picked_choices["overall_value"] = -picks.fun
+    picked_choices.loc[picked_choices.index == i, "starred"] = 1
+    picked_choices["starred_index"] = i
+    optimal_picks.append(picked_choices)
+
+picks = pd.concat(optimal_picks)
+picks = picks.sort_values(["overall_value", "starred_index"], ascending=False)
+best_w_starred = picks[picks["starred_index"] == picks.iloc[0]["starred_index"]]
+best_wo_starred = picks[picks["starred_index"] == -1]
+
+# Add back in pre-picked:
+full_w_starred = pd.concat([best_w_starred, pre_picked, locked])
+
+# Add star to best not in selections from optimizer
+full_wo_starred = pd.concat([best_wo_starred, pre_picked, locked])
+
+starrable_in_full = full_wo_starred[(full_wo_starred["salary"] <= 15)]
+assert (
+    len(
+        starrable_in_full[
+            starrable_in_full["score"] == starrable_in_full["score"].max()
+        ]
+    )
+    <= 1
 )
-picks = pickable[picks.x.astype("bool")]
+
+full_wo_starred.loc[
+    (full_wo_starred["score"] == starrable_in_full["score"].max())
+    & (full_wo_starred["salary"] <= 15),
+    "starred",
+] = 1
+
+full_wo_starred.loc[
+    (full_wo_starred["score"] == starrable_in_full["score"].max())
+    & (full_wo_starred["salary"] <= 15),
+    "score",
+] *= 2
+
+if full_wo_starred.score.sum() > full_w_starred.score.sum():
+    best = full_wo_starred
+else:
+    best = full_w_starred
+
+print(
+    f"best: \n {best[["type", "name", "salary", "score", "overall_value", "starred"]]}"
+)
 
 #######
 # Gather and save
 #######
 
-selections = pd.concat([picks, pre_picked])
-selections = selections.sort_values(
-    [
-        "type",
-        "score",
-        "salary",
-    ],
+best = best.sort_values(
+    ["type", "score", "salary", "starred"],
     ascending=False,
 )
 from datetime import datetime
 
 current_time = datetime.now().strftime("%Y_%m_%d_%H_%M")
-selections[["type", "name", "salary", "score", "include"]].to_csv(
+best[["type", "name", "salary", "score", "starred", "include"]].to_csv(
     f"../40_results/results_{current_time}.csv"
 )
 
-selections
+best
