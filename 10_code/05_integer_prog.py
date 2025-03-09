@@ -73,7 +73,10 @@ if teams_to_pick == 1:
 # Five drivers
 if drivers_to_pick > 0:
     drivers_A = np.zeros(len(pickable))
-    drivers_A[:teams_start] = 1
+    if teams_to_pick == 1:
+        drivers_A[:teams_start] = 1
+    else:
+        drivers_A[:] = 1
     drivers_A
     constraints.append(optimize.LinearConstraint(A=drivers_A, lb=0, ub=drivers_to_pick))
 
@@ -167,7 +170,6 @@ else:
 # Gather and save
 #######
 
-best.loc[best.starred == 1, "score"] /= 2
 best = best.sort_values(
     ["type", "score", "salary", "starred"],
     ascending=False,
