@@ -78,7 +78,7 @@ if drivers_to_pick > 0:
     constraints.append(optimize.LinearConstraint(A=drivers_A, lb=0, ub=drivers_to_pick))
 
 ###
-# Actual picks
+# Run Optimization for Best Picks
 ###
 
 # Star driver is hard to do in integer programming framework, so
@@ -118,11 +118,21 @@ picks = picks.sort_values(["overall_value", "starred_index"], ascending=False)
 best_w_starred = picks[picks["starred_index"] == picks.iloc[0]["starred_index"]]
 best_wo_starred = picks[picks["starred_index"] == -1]
 
-# Add back in pre-picked:
-full_w_starred = pd.concat([best_w_starred, pre_picked, locked])
+#######
+# Pull back in people under contract or
+# hand-picked.
+#
+# Check whether better to have starred driver in set from
+# optimizer or not and keep only best.
+#######
 
-# Add star to best not in selections from optimizer
+# Add back in pre-picked and contracts if starred in optimized set.
+full_w_starred = pd.concat([best_w_starred, pre_picked, locked])
+full_w_starred["starred"] = full_w_starred["starred"].fillna(0)
+
+# Add pre-picked and contracts if star not in selections from optimizer
 full_wo_starred = pd.concat([best_wo_starred, pre_picked, locked])
+full_wo_starred["starred"] = full_wo_starred["starred"].fillna(0)
 
 starrable_in_full = full_wo_starred[(full_wo_starred["salary"] <= 15)]
 assert (
@@ -146,28 +156,31 @@ full_wo_starred.loc[
     "score",
 ] *= 2
 
-if full_wo_starred.score.sum() > full_w_starred.score.sum():
+# Better to star an optimizer picked driver or
+# someone pre-picked or under contract.
+if full_wo_starred.score.sum() >= full_w_starred.score.sum():
     best = full_wo_starred
 else:
     best = full_w_starred
-
-print(
-    f"best: \n {best[["type", "name", "salary", "score", "overall_value", "starred"]]}"
-)
 
 #######
 # Gather and save
 #######
 
+best.loc[best.starred == 1, "score"] /= 2
 best = best.sort_values(
     ["type", "score", "salary", "starred"],
     ascending=False,
 )
+
+print(
+    f"best: {best["score"].sum()}. \n "
+    f"{best[["type", "name", "salary", "score", "starred"]]}"
+)
+
 from datetime import datetime
 
 current_time = datetime.now().strftime("%Y_%m_%d_%H_%M")
 best[["type", "name", "salary", "score", "starred", "include"]].to_csv(
     f"../40_results/results_{current_time}.csv"
 )
-
-best

@@ -1,7 +1,7 @@
 ,type,name,salary,score,starred,include
-26,team,Williams,13.2,90,,1.0
-11,driver,Sainz,14.6,192,1.0,1.0
-1,driver,Norris,28.6,155,,1.0
+26,team,Williams,13.2,90,0.0,1.0
+1,driver,Norris,28.6,155,0.0,1.0
 4,driver,Antonelli,20.2,120,0.0,
 5,driver,Alonso,18.8,111,0.0,
+11,driver,Sainz,14.6,96,1.0,1.0
 15,driver,Bortoleto,3.4,75,0.0,
