@@ -72,11 +72,9 @@ if teams_to_pick == 1:
 
 # Five drivers
 if drivers_to_pick > 0:
-    drivers_A = np.zeros(len(pickable))
+    drivers_A = np.ones(len(pickable))
     if teams_to_pick == 1:
-        drivers_A[:teams_start] = 1
-    else:
-        drivers_A[:] = 1
+        drivers_A[teams_start:] = 0
     drivers_A
     constraints.append(optimize.LinearConstraint(A=drivers_A, lb=0, ub=drivers_to_pick))
 
