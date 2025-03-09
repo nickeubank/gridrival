@@ -22,7 +22,7 @@ def value_selections(driver_choices, team_choice):
     return driver_choices.score.sum() + team_choice.score.sum()
 
 
-def pick_drivers(pickable_drivers, pickable_teams, n=0):
+def pick_drivers(pickable_drivers, pickable_teams, BUDGET, n=0):
 
     if n > 100:
         raise ValueError("Tried 50, all over budget. Maybe problem?")
@@ -37,20 +37,26 @@ def pick_drivers(pickable_drivers, pickable_teams, n=0):
     driver_selections = pickable_drivers[pickable_drivers["include"].isnull()].sample(
         n=drivers_to_pick - num_included_drivers
     )
-    pickable_teams = pickable_teams[pickable_teams["include"].isnull()]
-    if len(pickable_teams) > 0:
-        team_selection = pickable_teams.sample(n=teams_to_pick - num_included_teams)
+    possible_teams = pickable_teams[pickable_teams["include"].isnull()]
+    if len(possible_teams) > 0:
+        team_selection = possible_teams.sample(n=teams_to_pick - num_included_teams)
     else:
-        team_selection = pickable_teams
+        team_selection = possible_teams
 
+    # Pair the mandatory with selected
     driver_selections = pd.concat([driver_selections, must_include_drivers])
     team_selection = pd.concat([team_selection, must_include_teams])
+    assert len(driver_selections) == 5
+    assert len(team_selection) == 1
 
     cost = (
         driver_selections["salary"].sum().squeeze() + team_selection["salary"].squeeze()
     )
-    if cost.squeeze() < BUDGET:
-        pick_drivers(pickable_drivers, pickable_teams, n=n + 1)
+
+    if BUDGET < cost.squeeze() and n < 10_000:
+        driver_selections, team_selection = pick_drivers(
+            pickable_drivers, pickable_teams, BUDGET, n=n + 1
+        )
 
     return driver_selections, team_selection
 
@@ -62,9 +68,9 @@ if __name__ == "__main__":
     ######
 
     BUDGET = 100
-    INCLUDE_THRESHOLD = 830
+    INCLUDE_THRESHOLD = 700
 
-    salaries = pd.read_csv("../00_source_data/gridrival_salaries.csv")
+    salaries = pd.read_csv("../00_source_data/gridrival_stats.csv")
     salaries["locked"] = salaries["contract"].notnull()
 
     drivers = salaries[(salaries["type"] == "driver") & (salaries["exclude"] != 1)]
@@ -78,11 +84,12 @@ if __name__ == "__main__":
     pickable_drivers = drivers[~drivers["locked"]]
     pickable_teams = teams[~teams["locked"]]
 
-    selections = []
-
     def process_iteration(tup):
-        i, INCLUDE_THRESHOLD = tup
-        picked_drivers, picked_teams = pick_drivers(pickable_drivers, pickable_teams)
+        i, INCLUDE_THRESHOLD, BUDGET = tup
+        picked_drivers, picked_teams = pick_drivers(
+            pickable_drivers, pickable_teams, BUDGET
+        )
+
         v = value_selections(picked_drivers, picked_teams)
         if v > INCLUDE_THRESHOLD:
             choices = pd.concat([picked_drivers, picked_teams])
@@ -91,10 +98,13 @@ if __name__ == "__main__":
             return choices
         return None
 
-    results = Parallel(n_jobs=5)(
-        delayed(process_iteration)((i, INCLUDE_THRESHOLD)) for i in range(100_000)
+    results = Parallel(n_jobs=-1)(
+        delayed(process_iteration)((i, INCLUDE_THRESHOLD, BUDGET))
+        for i in range(10_000)
     )
+    # results = [process_iteration((0, INCLUDE_THRESHOLD, BUDGET))]
 
+    selections = []
     for result in results:
         if result is not None:
             selections.append(result)
@@ -104,11 +114,14 @@ if __name__ == "__main__":
         [
             "points",
             "i",
+            "type",
             "salary",
         ],
         ascending=False,
     )
     from datetime import datetime
 
-    current_time = datetime.now().strftime("%Y%m%d_%H%M")
-    selections.to_csv(f"../40_results/results_{current_time}.csv")
+    current_time = datetime.now().strftime("%Y_%m_%d_%H_%M")
+    selections[["type", "name", "salary", "score", "include", "points", "i"]].to_csv(
+        f"../40_results/results_{current_time}.csv"
+    )
