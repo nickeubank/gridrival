@@ -169,13 +169,13 @@ else:
 #######
 
 best = best.sort_values(
-    ["type", "score", "salary", "starred"],
+    ["type", "score", "salary", "starred", "include"],
     ascending=False,
 )
 
 print(
-    f"best: {best["score"].sum()}. \n "
-    f"{best[["type", "name", "salary", "score", "starred"]]}"
+    f"best: {best["score"].sum()} points at a total budget of {best["salary"].sum():.1f}m. \n "
+    f"{best[["type", "name", "salary", "score", "starred", "include"]]}"
 )
 
 from datetime import datetime

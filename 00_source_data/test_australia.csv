@@ -1,0 +1,23 @@
+,held,type,driver_abbr,driver_name,driver_team,qualifying_position,finishing_position
+0,0,driver,VER,M. Verstappen,RBR,20,6
+1,0,driver,RUS,G. Russell,MER,1,1
+2,0,driver,NOR,L. Norris,MCL,6,5
+3,0,driver,PIA,O. Piastri,MCL,5,21
+4,1,driver,ANT,K. Antonelli,MER,2,2
+5,0,driver,LEC,C. Leclerc,FER,4,3
+6,0,driver,ALO,F. Alonso,AMR,17,18
+7,1,driver,HAM,L. Hamilton,FER,7,4
+8,0,driver,HAD,I. Hadjar,RBR,3,20
+9,0,driver,GAS,P. Gasly,ALP,14,10
+10,0,driver,STR,L. Stroll,AMR,21,17
+11,0,driver,SAI,C. Sainz Jr,WIL,22,15
+12,0,driver,LAW,L. Lawson,RBS,8,13
+13,0,driver,ALB,A. Albon,WIL,15,12
+14,0,driver,HUL,N. Hulkenberg,AUD,11,22
+15,0,driver,BOR,G. Bortoleto,AUD,10,9
+16,1,driver,BEA,O. Bearman,HAS,12,7
+17,1,driver,OCO,E. Ocon,HAS,13,11
+18,0,driver,BOT,V. Bottas,CAD,19,19
+19,0,driver,PER,S. Perez,CAD,18,16
+20,1,driver,COL,F. Colapinto,ALP,16,14
+21,0,driver,LIN,A. Lindblad,RBS,9,8

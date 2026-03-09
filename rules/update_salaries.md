@@ -1,0 +1,1 @@
+In the folder ~/github/gridrival/00_source_data/salary_screenshots is a set of screenshots of driver ranks and salaries from gridrival. please extract the data in those screenshots and use it to update salaries in `../salaries_and_averages.csv` in the rows where race is 1.

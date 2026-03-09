@@ -1,0 +1,34 @@
+held,type,abbreviation,driver_name,driver_team,qualifying_position,finishing_position
+0,driver,VER,M. Verstappen,RBR,,6
+0,driver,RUS,G. Russell,MER,1,1
+0,driver,NOR,L. Norris,MCL,6,5
+0,driver,PIA,O. Piastri,MCL,5,21
+1,driver,ANT,K. Antonelli,MER,2,2
+0,driver,LEC,C. Leclerc,FER,4,3
+0,driver,ALO,F. Alonso,AMR,17,18
+1,driver,HAM,L. Hamilton,FER,7,4
+0,driver,HAD,I. Hadjar,RBR,3,20
+0,driver,GAS,P. Gasly,ALP,14,10
+0,driver,STR,L. Stroll,AMR,,17
+0,driver,SAI,C. Sainz Jr,WIL,,15
+0,driver,LAW,L. Lawson,RBS,8,13
+0,driver,ALB,A. Albon,WIL,15,12
+0,driver,HUL,N. Hulkenberg,AUD,11,22
+0,driver,BOR,G. Bortoleto,AUD,10,9
+1,driver,BEA,O. Bearman,HAS,12,7
+1,driver,OCO,E. Ocon,HAS,13,11
+0,driver,BOT,V. Bottas,CAD,19,19
+0,driver,PER,S. Perez,CAD,18,16
+1,driver,COL,F. Colapinto,ALP,16,14
+0,driver,LIN,A. Lindblad,RBS,9,8
+0,team,,MER,,,
+0,team,,MCL,,,
+0,team,,RBR,,,
+0,team,,FER,,,
+0,team,,AMR,,,
+0,team,,WIL,,,
+0,team,,RBS,,,
+0,team,,ALP,,,
+1,team,,AUD,,,
+0,team,,CAD,,,
+0,team,,HAS,,,

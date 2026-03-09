@@ -1,0 +1,34 @@
+﻿held,type,driver_name,driver_team,starting_salary,eight_race_average,qualifying_position,finishing_position
+0,driver,M. Verstappen,RBR,30,1,2,2
+0,driver,G. Russell,MER,28.7,2,1,1
+0,driver,L. Norris,MCL,27.4,3,3,3
+0,driver,O. Piastri,MCL,26.1,4,4,4
+1,driver,K. Antonelli,MER,24.8,5,22,6
+0,driver,C. Leclerc,FER,23.5,6,5,5
+0,driver,F. Alonso,AMR,22.2,7,21,21
+1,driver,L. Hamilton,FER,20.9,8,6,6
+0,driver,I. Hadjar,RBR,19.6,9,8,8
+0,driver,P. Gasly,ALP,18.3,10,9,9
+0,driver,L. Stroll,AMR,17,11,20,20
+0,driver,C. Sainz Jr,WIL,15.7,12,19,19
+0,driver,L. Lawson,RBS,14.4,13,13,13
+0,driver,A. Albon,WIL,13.1,14,18,18
+0,driver,N. Hulkenberg,AUD,11.8,15,15,15
+0,driver,G. Bortoleto,AUD,10.5,16,16,16
+1,driver,O. Bearman,HAS,9.2,17,11,11
+1,driver,E. Ocon,HAS,7.9,18,10,10
+0,driver,V. Bottas,CAD,4.7,19,16,16
+0,driver,S. Perez,CAD,4.7,20,17,17
+1,driver,F. Colapinto,ALP,4.7,21,14,14
+0,driver,A. Lindblad,RBS,4.6,22,15,15
+0,team,MER,,28.5,1,,
+0,team,MCL,,28.5,2,,
+0,team,RBR,,25,3,,
+0,team,FER,,22.5,4,,
+0,team,AMR,,20,5,,
+0,team,WIL,,17.5,6,,
+0,team,RBS,,15,7,,
+0,team,ALP,,12.5,8,,
+0,team,AUD,,10,9,,
+0,team,CAD,,7.5,10,,
+1,team,HAS,,5,11,,
